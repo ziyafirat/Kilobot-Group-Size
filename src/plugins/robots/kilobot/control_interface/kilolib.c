@@ -68,10 +68,13 @@ uint32_t mt_uniform32() {
 uint32_t kilo_ticks                = 0;   // current number of elapsed ticks
 uint16_t kilo_tx_period            = 100; // message transmission period in ms
 uint16_t kilo_uid                  = 0;
-uint8_t  kilo_turn_left            = 77;
-uint8_t  kilo_turn_right           = 77;
+uint8_t  kilo_turn_left            = 57;
+uint8_t  kilo_turn_right           = 57;
 uint8_t  kilo_straight_left        = 48;
 uint8_t  kilo_straight_right       = 48;
+//new param
+uint8_t  kilo_straight_count       = 0;
+
 void message_rx_dummy(message_t* m, distance_measurement_t* d) { }
 message_t *message_tx_dummy() { return NULL; }
 void message_tx_success_dummy() {}

@@ -150,6 +150,9 @@ extern uint8_t kilo_straight_left;
  */
 extern uint8_t kilo_straight_right;
 
+
+extern uint8_t kilo_straight_count;
+
 /**
  * @brief Callback for message receiption.
  *

@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <system threads="0" />
+    <experiment length="0"
+                ticks_per_second="10" />
+  </framework>
+
+  <!-- ****************** -->
+  <!-- * Loop functions * -->
+  <!-- ****************** -->
+  <loop_functions library="build/aggregation/loop_functions/aggregation_loop_functions/libaggregation_loop_functions" label="aggregation_loop_functions" nBots="0" output="test.txt" aParam="1.75" bParam="4" link="2" mutation="0.001" timeStopCond="0" />
+
+
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+
+    <kilobot_aggregation_controller id="fac"
+                                  library="build/aggregation/controllers/kilobot_aggregation/libkilobot_aggregation.so">
+      <actuators>
+        <differential_steering implementation="default" />
+        <kilobot_communication implementation="default" medium="kilomedium"/>
+      </actuators>
+      <sensors>
+        <kilobot_communication implementation="default" medium="kilomedium" show_rays="true" />
+      </sensors>
+      <params aParam="1" bParam="2" minDist="70" />
+    </kilobot_aggregation_controller>
+
+  </controllers>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <arena size="2, 2, 1" center="0,0,0.5">
+
+    <distribute>
+      <position method="uniform" min="-0.7,-0.7,0" max="0.7,0.7,0" />
+      <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
+      <entity quantity="50" max_trials="100">
+        <kilobot id="">
+          <controller config="fac" />
+        </kilobot>
+      </entity>
+    </distribute>
+    
+ <kilobot id="101">
+      <body position="0,-0.5,0" orientation="0,0,0" />
+      <controller config="fac" />>
+    </kilobot>
+<kilobot id="102">
+      <body position="0,0.5,0" orientation="0,0,0" />
+      <controller config="fac" />>
+    </kilobot>
+
+    </arena>
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <dynamics2d id="dyn2d" />
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media>
+    <kilobot_communication id="kilomedium" />
+    <kilobot_communication id="kilocomm" />
+  </media>
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+<visualization>
+      <qt-opengl lua_editor="false">
+      <user_functions library="build/aggregation/loop_functions/word_loop_functions/libword_loop_functions"
+                      label="word_qtuser_functions" />
+      <camera>
+        <placement idx="0" position="0,0,1.5" look_at="0,0,0" lens_focal_length="20" />
+        <placement idx="1" position="0.25,0.25,0.25" look_at="0,0,0" lens_focal_length="20" />
+      </camera>
+    </qt-opengl>
+  </visualization>
+
+</argos-configuration>

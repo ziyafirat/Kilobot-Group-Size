@@ -1,7 +1,7 @@
 #include <kilolib.h>
 #include <stdlib.h>
 
-#define quality 30
+#define BEACON_BLUE 30
 
 int message_sent = 0;
 message_t message;
@@ -21,11 +21,12 @@ void loop()
     {
         message_last_changed = kilo_ticks;
         message.type = NORMAL;
-        message.data[0] = Cb;
-        message.data[1] = quality;
-        message.data[5] = quality;
+		message.data[0] = 98;
+		message.data[1] = 98;
+		message.data[2] = Cb;
+        message.data[5] = BEACON_BLUE;
         message.data[6] = Cb;
-        message.data[7] = kilo_uid;
+        message.data[7] = 98;
         message.crc = message_crc(&message);
 
     }
@@ -36,7 +37,7 @@ void loop()
         message_sent = 0;
         //printf("Blue sent: %d %d\n", message.data[0], message.data[1]);
         set_color(RGB(0, 0, 1));
-        delay(100);
+        delay(10);
         set_color(RGB(0, 0, 0));
     }
 }

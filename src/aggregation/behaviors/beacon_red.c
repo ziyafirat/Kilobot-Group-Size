@@ -1,7 +1,7 @@
 #include <kilolib.h>
 #include <stdlib.h>
 
-#define quality 60
+#define BEACON_RED 60
 
 int message_sent = 0;
 message_t message;
@@ -13,6 +13,7 @@ enum commitment{Cb, Cr ,uncommited};
 void setup()
 {
     srand(rand_hard());
+
 }
 
 void loop()
@@ -21,11 +22,12 @@ void loop()
     {
         message_last_changed = kilo_ticks;
         message.type = NORMAL;
-        message.data[0] = Cr;
-        message.data[1] = quality;
-        message.data[5] = quality;
+		message.data[0] = 99;
+		message.data[1] = 99;
+		message.data[2] = Cr;
+        message.data[5] = BEACON_RED;
         message.data[6] = Cr;
-        message.data[7] = kilo_uid;
+        message.data[7] = 99;
         message.crc = message_crc(&message);
 
     }
@@ -36,7 +38,7 @@ void loop()
         message_sent = 0;
         //printf("Red sent: %d %d\n", message.data[0], message.data[1]);
         set_color(RGB(1, 0, 0));
-        delay(100);
+        delay(10);
         set_color(RGB(0, 0, 0));
     }
 }

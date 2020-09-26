@@ -26,7 +26,7 @@
       <sensors>
         <kilobot_communication implementation="default" medium="kilocomm" />
       </sensors>
-      <params behavior="build/examples/behaviors/debug" />
+      <params behavior="build/examples/behaviors/test_debug" />
     </kilobot_controller>
 
   </controllers>

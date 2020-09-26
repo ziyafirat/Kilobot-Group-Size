@@ -193,7 +193,7 @@ void set_motors(uint8_t left, uint8_t right) {
 }
 
 void spinup_motors() {
-   set_motors(255, 255);
+   set_motors(60, 60);
 }
 
 void set_color(uint8_t color) {

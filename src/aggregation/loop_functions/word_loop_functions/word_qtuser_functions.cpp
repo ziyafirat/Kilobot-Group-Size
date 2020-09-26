@@ -15,6 +15,25 @@ void CWORDQTUserFunctions::PreStep() {
 }
 
 void CWORDQTUserFunctions::Draw(CKilobotEntity& c_kilobot_entity) {
+
+    CColor cKilobotColor=c_kilobot_entity.GetLEDEquippedEntity().GetLED(0).GetColor();
+
+    if (cKilobotColor == CColor::RED) {
+        DrawCylinder(
+                    CVector3(0.015f, 0.0f, 0.03f),
+                    CQuaternion(),
+                    0.01f,
+                    0.02f,
+                    CColor::RED);//,6);
+
+   if (cKilobotColor == CColor::BLUE) {
+        DrawCylinder(
+                    CVector3(0.015f, 0.0f, 0.03f),
+                    CQuaternion(),
+                    0.01f,
+                    0.02f,
+                    CColor::BLUE);//,6);
+
    /* The position of the text is expressed wrt the reference point of the footbot
     * For a foot-bot, the reference point is the center of its base.
     * See also the description in

@@ -1,8 +1,10 @@
 #include "aggregation.h"
-
+//#include <argos3/plugins/robots/kilobot/control_interface/kilolib.h>
 #include <algorithm>
 #include <cstring>
 #include <cerrno>
+#include <argos3/plugins/robots/kilobot/control_interface/ci_kilobot_controller.h>
+//#include <aggregation/behaviors/aggregation.c>
 /****************************************/
 /****************************************/
 using namespace std;
@@ -53,6 +55,10 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 	beacon_blue_count = 0;
 	beacon_red_count = 0;
 
+//	informed_size_blue_beacon = 5;
+//	informed_size_red_beacon = 5;
+//	total_informed_size = 10;
+
 	////////////////////////////////////////////////////////////////////////////////// CREATION AND POSITIONING OF THE ARENA WALLS////////////////////////////////////////////////////////////////////////////////
 	CVector3 arena_size = GetSpace().GetArenaSize();
 	float m_fArenaRadius = Min(arena_size[0], arena_size[1]) / 2;
@@ -98,7 +104,6 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 	}
 
 	PlaceBots(m_fArenaRadius);
-	//ConfigBots();
 }
 
 void CAggregation::PlaceBots(float m_fArenaRadius) {
@@ -143,28 +148,6 @@ void CAggregation::PlaceBots(float m_fArenaRadius) {
 
 }
 
-void CAggregation::ConfigBots() {
-	CKilobotEntity *kbEntity;
-
-	for (unsigned int i = 0; i < bots.size(); ++i) {
-		kbEntity = bots[i];
-		CKilobotCommunicationEntity kilocomm =
-				kbEntity->GetKilobotCommunicationEntity();
-		message_t msg = *(new message_t());
-		msg.type = NORMAL;
-		msg.data[0] = CONFIG;
-		//PARAMS
-		msg.data[1] = link;
-		//msg.data[2] = (((uint8_t) round((a)*4))<<4) + (uint8_t) round((b)*4);
-		msg.data[2] = (((uint8_t) round((a - 1.25) * 4)) << 4)
-				+ (uint8_t) round((b - 1.25) * 4);
-		msg.data[4] = double_to_uint8(m);
-		msg.crc = 0; //message_crc(&msg);
-		GetSimulator().GetMedium<CKilobotCommunicationMedium>("kilocomm").SendOHCMessageTo(
-				*kbEntity, &msg);
-	}
-
-}
 
 /****************************************/
 /****************************************/
@@ -203,11 +186,138 @@ void CAggregation::Destroy() {
 /****************************************/
 
 void CAggregation::PreStep() {
-	int clock = GetSpace().GetSimulationClock();
-	if (clock < 20)
-		ConfigBots();
+	//int clock = GetSpace().GetSimulationClock();
 	/* Nothing to do */
 }
+
+//void CAggregation::PostStep() {
+//
+//	  int recordSteps = 100;
+//	    int clock = GetSpace().GetSimulationClock();
+//	    if(clock%recordSteps==0)
+//	        m_cOutFile << clock << " ";
+//
+//	    for(unsigned int i=0; i<bots.size(); ++i) {
+//	        CKilobotEntity& kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
+//	        CKilobotCommunicationEntity kilocomm = kbEntity.GetKilobotCommunicationEntity();
+//	        if(kilocomm.GetTxStatus()==CKilobotCommunicationEntity::TX_SUCCESS)
+//	            stayArray[i] = kilocomm.GetTxMessage()->data[2]!=0;
+//
+//	        int clock = GetSpace().GetSimulationClock();
+//	        if(clock%recordSteps==0) {
+//	            Real Robot_X = kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX();
+//	            Real Robot_Y = kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY();
+//	            m_cOutFile << "( " << Robot_X << " , " << Robot_Y << " , " << stayArray[i] << ") ";
+//	        }
+//	    }
+//
+//	    if(clock%recordSteps==0)
+//	        m_cOutFile<<endl;
+//
+////	int clock = GetSpace().GetSimulationClock();
+////	if (clock % 100 == 0) {
+////
+//////		 /* Go through the kilobots */
+//////		   for(size_t i = 0; i < m_tKBs.size(); ++i) {
+//////		      /* Create a pointer to the kilobot state */
+//////		      kilobot_state_t* ptState = m_tKBs[i]->CCI_KilobotController;
+//////		      /* Print current state internal robot state */
+//////		      LOG << ptState->tx_state << ": "                       << std::endl
+//////		          << "\ttx_state: "           << ptState->tx_state          << std::endl
+//////		          << "\trx_state: "           << ptState->rx_state          << std::endl
+//////		          << "\tambientlight: "       << ptState->ambientlight      << std::endl
+//////		          << "\tleft_motor: "         << ptState->left_motor        << std::endl
+//////		          << "\tright_motor: "        << ptState->right_motor       << std::endl
+//////		          << "\tcolor: "              << ptState->color             << std::endl
+//////		          << "\tgradient: "           << m_tKBs[i].second->gradient << std::endl;
+//////		   }
+////
+////
+//////		   for(size_t i = 0; i < m_tKBs.size(); ++i) {
+//////		      /* Create a pointer to the kilobot state */
+//////		      kilobot_state_t* ptState = m_tKBs[i];
+//////		      /* Print current state internal robot state */
+//////		      m_cOutFile << ptState->tx_state  << ": "                       << std::endl
+//////		          << "\ttx_state: "           << ptState->tx_state          << std::endl
+//////		          << "\trx_state: "           << ptState->rx_state          << std::endl
+//////		          << "\tambientlight: "       << ptState->ambientlight      << std::endl
+//////		          << "\tleft_motor: "         << ptState->left_motor        << std::endl
+//////		          << "\tright_motor: "        << ptState->right_motor       << std::endl
+//////		          << "\tcolor: "              << ptState->color             << std::endl
+//////		          << "\tgradient: "           << std::endl;
+//////		   }
+////
+////		beacon_blue_count = 0;
+////		beacon_red_count = 0;
+////		m_cOutFile << clock << "	";
+////		for (unsigned int i = 0; i < bots.size(); ++i) {
+////			CKilobotEntity &kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
+////
+////			CCI_KilobotController &controller =
+////								static_cast<CCI_KilobotController>(kbEntity.GetControllableEntity().GetController());
+////						//string state = controller.;
+////
+//////			  //CKilobotEntity &c_kilobot = *any_cast<CKilobotEntity *>(it->second);
+//////					   CCI_KilobotController &c_controller = dynamic_cast<CCI_KilobotController &>(kbEntity.GetControllableEntity().GetController());
+//////					            int sharedMemFD = c_controller.CCI_KilobotController();
+//////
+//////					            kilobot_state_t *robotState;
+//////					            /* Resize shared memory area to contain the robot state, filling it with zeros */
+//////					            ftruncate(sharedMemFD, sizeof(kilobot_state_t));
+//////					            /* Get pointer to shared memory area */
+////////					            robotState =
+////////					                (kilobot_state_t *)mmap(NULL,
+////////					                                        sizeof(kilobot_state_t),
+////////					                                        PROT_READ,
+////////					                                        MAP_SHARED,
+////////					                                        sharedMemFD,
+////////					                                        0);
+////////					            if (robotState == MAP_FAILED)
+////////					            {
+////////					                  close(sharedMemFD);
+////////					                  exit(1);
+////////					            }
+//////
+//////					            message_t message = robotState->tx_message;
+//////
+////////			Real Robot_X =
+////////					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX();
+////////			Real Robot_Y =
+////////					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY();
+//////
+////
+////
+////		     CKilobotCommunicationEntity kilocomm = kbEntity.GetKilobotCommunicationEntity();
+////
+////
+////			int state = 2;
+//////			if (kilocomm.GetTxStatus()
+//////					== CKilobotCommunicationEntity::TX_SUCCESS) {
+//////				state = kilocomm.GetTxMessage()->data[2];
+//////			}
+//////			message_t* message = kilocomm.GetTxMessage();
+//////			state=message->data[2];
+////			state = kilocomm.GetTxMessage()->data[2];
+////			if (state == 0) {
+////				beacon_blue_count += 1;
+////			} else if (state == 1) {
+////				beacon_red_count += 1;
+////			}
+////
+////			m_cOutFile << i << "id	" <<  state << "state	"
+////							<< kilocomm.GetTxMessage() << "	";
+////			m_cOutFile << endl;
+////
+//////			m_cOutFile << "( " << Robot_X << " , " << Robot_Y << " , "
+//////					<< ((unsigned int) word) << ") ";
+////		}
+////
+////		m_cOutFile << beacon_blue_count / bots.size() << "	" <<  bots.size()<< "	"
+////				<< beacon_red_count / bots.size() << "	";
+////		m_cOutFile << endl;
+////	}
+//}
+
 
 void CAggregation::PostStep() {
 	int clock = GetSpace().GetSimulationClock();
@@ -218,28 +328,49 @@ void CAggregation::PostStep() {
 		m_cOutFile << clock << "	";
 		for (unsigned int i = 0; i < bots.size(); ++i) {
 			CKilobotEntity &kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
-			Real Robot_X =
-					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX();
-			Real Robot_Y =
-					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY();
 			CKilobotCommunicationEntity kilocomm =
 					kbEntity.GetKilobotCommunicationEntity();
-			unsigned char word;
-			unsigned int state;
-			if (kilocomm.GetTxStatus()
-					== CKilobotCommunicationEntity::TX_SUCCESS) {
-				word = kilocomm.GetTxMessage()->data[2];
-				state = kilocomm.GetTxMessage()->data[8];
-			}
 
-			if (state == 0) {
-				beacon_blue_count += 1;
-			} else if (state == 1) {
-				beacon_red_count += 1;
-			}
+			CColor color = bots[i]->GetLEDEquippedEntity().GetLED(0).GetColor();
+			CColor cl;
+			 // update kb led color
+			//CColor color1 = kbEntity.GetLEDEquippedEntity().GetLED(0).GetColor();
+			//CColor color2 = kbEntity.GetLEDEquippedEntity().GetLED(1).GetColor();
+			 //color.
+//			 CLEDEquippedEntity cled = kbEntity.GetLEDEquippedEntity();
+//			  cled.GetLEDs();
+			 LOG << i<<"- color:" <<  color << std::endl;
+			 if(color.GetGreen()>0)
+			 {
 
-//			m_cOutFile << "( " << Robot_X << " , " << Robot_Y << " , "
-//					<< ((unsigned int) word) << ") ";
+			 }
+			 else{
+				 if(color.GetBlue()>0){
+					 beacon_blue_count += 1;
+					 LOG << "blue:" <<  beacon_blue_count << std::endl;
+				 }
+				 else if(color.GetRed()>0)
+				 {
+					 beacon_red_count += 1;
+					 LOG << "red:" <<  beacon_red_count << std::endl;
+				 }
+			 }
+
+			 //kilobot_state_t* ptState = kbEntity->GetRobotState();
+			//m_vecKilobotColors
+//			GetKilobotLedColor(kbEntity);
+//			int state = 2;
+//			if (kilocomm.GetTxStatus()
+//					== CKilobotCommunicationEntity::TX_SUCCESS) {
+//				state = kilocomm.GetTxMessage()->data[2];
+//			}
+//
+//			if (state == 0) {
+//				beacon_blue_count += 1;
+//			} else if (state == 1) {
+//				beacon_red_count += 1;
+//			}
+
 		}
 
 		m_cOutFile << beacon_blue_count / bots.size() << "	"
@@ -247,6 +378,85 @@ void CAggregation::PostStep() {
 		m_cOutFile << endl;
 	}
 }
+
+
+//void CAggregation::PostStep() {
+//   /* Go through the kilobots */
+//   for(size_t i = 0; i < m_tKBs.size(); ++i) {
+//      /* Create a pointer to the kilobot state */
+//      kilobot_state_t* ptState = m_tKBs[i].first->GetRobotState();
+//      /* Print current state internal robot state */
+//      LOG << m_tKBs[i].first->GetId() << ": "                       << std::endl
+//          << "\ttx_state: "           << ptState->tx_state          << std::endl
+//          << "\trx_state: "           << ptState->rx_state          << std::endl
+//          << "\tambientlight: "       << ptState->ambientlight      << std::endl
+//          << "\tleft_motor: "         << ptState->left_motor        << std::endl
+//          << "\tright_motor: "        << ptState->right_motor       << std::endl
+//          << "\tcolor: "              << ptState->color             << std::endl
+//          << "\tgradient: "           << m_tKBs[i].second->gradient << std::endl;
+//   }
+//}
+
+//void CAggregation::PostStep() {
+//    //int recordSteps = 100;
+//    int clock = GetSpace().GetSimulationClock();
+//    if (clock % 100 == 0)
+//        m_cOutFile << clock << " ";
+//
+//    for(unsigned int i=0; i<bots.size(); ++i) {
+//    	CKilobotEntity &kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
+//
+//    	//int sd=commit_state;
+//
+//    			CKilobotCommunicationEntity kilocomm =
+//    					kbEntity.GetKilobotCommunicationEntity();
+//
+//    			int state = commit_state;
+////    			if (kilocomm.GetTxStatus()
+////    					== CKilobotCommunicationEntity::TX_SUCCESS) {
+////    				state = kilocomm.GetTxMessage()->data[2];
+////    			}
+//
+////    			if (state == 0) {
+////    				beacon_blue_count += 1;
+////    			} else if (state == 1) {
+////    				beacon_red_count += 1;
+////    			}
+//
+//        int clock = GetSpace().GetSimulationClock();
+//        if(clock % 100 == 0) {
+//        			m_cOutFile << i << "i	" << state << "	" << beacon_blue_count / bots.size() << "	"
+//        					<< beacon_red_count / bots.size() << "	";
+//        }
+//    }
+//
+//    if (clock % 100 == 0)
+//        m_cOutFile<<endl;
+//}
+
+//void CAggregation::PostStep() {
+//    int recordSteps = 100;
+//    int clock = GetSpace().GetSimulationClock();
+//    if(clock%recordSteps==0)
+//        m_cOutFile << clock << " ";
+//
+//    for(unsigned int i=0; i<bots.size(); ++i) {
+//        CKilobotEntity& kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
+//        CKilobotCommunicationEntity kilocomm = kbEntity.GetKilobotCommunicationEntity();
+//        if(kilocomm.GetTxStatus()==CKilobotCommunicationEntity::TX_SUCCESS)
+//            stayArray[i] = kilocomm.GetTxMessage()->data[0]!=0;
+//
+//        int clock = GetSpace().GetSimulationClock();
+//        if(clock%recordSteps==0) {
+//            Real Robot_X = kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX();
+//            Real Robot_Y = kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY();
+//            m_cOutFile << "( " << Robot_X << " , " << Robot_Y << " , " << stayArray[i] << ") ";
+//        }
+//    }
+//
+//    if(clock%recordSteps==0)
+//        m_cOutFile<<endl;
+//}
 
 /****************************************/
 /****************************************/

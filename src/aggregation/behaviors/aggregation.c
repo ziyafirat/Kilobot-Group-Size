@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "aggregation.h"
+//#include "aggregation.h"
 //#include <debug.h>
 
 // run
@@ -33,8 +33,8 @@
 
 //debug_info_t dddsds;
 // Track the number of nearest neighbors
-int informed_size_blue_beacon = 18 ;
-int informed_size_red_beacon = 2;
+int informed_size_blue_beacon = 2 ;
+int informed_size_red_beacon = 18;
 int total_informed_size = 20;
 
 int N_neighbors = 0;

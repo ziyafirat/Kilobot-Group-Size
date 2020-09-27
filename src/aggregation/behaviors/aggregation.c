@@ -57,7 +57,7 @@ unsigned char rec_quality[2];
 
 char motion_state;
 int new_message;
-//int commit_state;
+int commit_state;
 char flag = 0;
 int neighbours_size_while_joining;
 

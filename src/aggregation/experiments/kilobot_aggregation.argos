@@ -73,7 +73,7 @@
            intensity="1.0"
            medium="leds"/>
 
-    <kilobot id="kbR1">
+    <kilobot id="beacon_red">
       <body position="-0.3,0,0" orientation="0,0,0" />
       <controller config="beacon_red" />>
     </kilobot>
@@ -85,7 +85,7 @@
     </kilobot>-->
 
 
-    <kilobot id="kbB1">
+    <kilobot id="beacon_blue">
       <body position="0.3,0,0" orientation="0,0,0" />
       <controller config="beacon_blue" />>
     </kilobot>

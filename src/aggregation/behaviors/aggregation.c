@@ -379,9 +379,9 @@ void leave() {
 //					walk, distance, kilo_ticks);
 			if (rl < p) { //leave
 
-				write_coords("leaving ", kilo_uid, 0, N_neighbors,
-						neighbours_size_while_joining, exp1, rl, Res1, 0,
-						commit_state, walk, distance, kilo_ticks);
+//				write_coords("leaving ", kilo_uid, 0, N_neighbors,
+//						neighbours_size_while_joining, exp1, rl, Res1, 0,
+//						commit_state, walk, distance, kilo_ticks);
 				walk = 1;
 
 				commit_state = uncommited;
@@ -481,7 +481,7 @@ void loop() {
 
 		count_timer_log=count_timer_log+1;
 		//message.data[2] = commit_state;
-		write_coords_timer("timer ", kilo_uid, count_timer_log, commit_state, kilo_ticks);
+		//write_coords_timer("timer ", kilo_uid, count_timer_log, commit_state, kilo_ticks);
 	}
 	if (flag_wall_count > 0) { //wall flag
 		--flag_wall_count;
@@ -560,11 +560,11 @@ void loop() {
 										|| kilo_uid >= total_informed_size) {
 									commit_state = Cb; // Stay in blue beacon
 
-									write_coords("BlueBeacon ", kilo_uid, 0,
-											N_neighbors,
-											neighbours_size_while_joining, 0, 0,
-											0, 0, commit_state, walk, distance,
-											kilo_ticks);
+//									write_coords("BlueBeacon ", kilo_uid, 0,
+//											N_neighbors,
+//											neighbours_size_while_joining, 0, 0,
+//											0, 0, commit_state, walk, distance,
+//											kilo_ticks);
 									stay();
 								} else {
 									walk = 1;
@@ -573,11 +573,11 @@ void loop() {
 								//rec_quality[mes_from] == 60) { // red
 								if (kilo_uid >= informed_size_blue_beacon) {
 									commit_state = Cr; // Stay in red beacon
-									write_coords("RedBeacon ", kilo_uid, 0,
-											N_neighbors,
-											neighbours_size_while_joining, 0, 0,
-											0, 0, commit_state, walk, distance,
-											kilo_ticks);
+//									write_coords("RedBeacon ", kilo_uid, 0,
+//											N_neighbors,
+//											neighbours_size_while_joining, 0, 0,
+//											0, 0, commit_state, walk, distance,
+//											kilo_ticks);
 									stay();
 								} else {
 									walk = 1;

@@ -80,22 +80,11 @@
     </kilobot>
 
 
-    <!--<kilobot id="kbR2">
-      <body position="-0.45,0,0" orientation="0,0,0" />
-      <controller config="beacon_red" />>
-    </kilobot>-->
-
-
     <kilobot id="beacon_blue" communication_range="0.20">
       <body position="-0.3,0,0" orientation="0,0,0" />
       <controller config="beacon_blue" />
       <dynamics2d friction="0.7" />
     </kilobot>
-
-<!-- <kilobot id="kbB2">
-      <body position="0.45,0,0" orientation="0,0,0" />
-      <controller config="beacon_blue" />>
-    </kilobot>-->
 
 
 
@@ -128,7 +117,7 @@
 
   <!-- ****************** -->
   <!-- * Visualization *  -->
-  <!-- ****************** -->
+  <!-- ****************** 
   <visualization>
     <qt-opengl>
   <user_functions library="build/aggregation/loop_functions/word_loop_functions/libword_loop_functions" label="word_qtuser_functions" />
@@ -137,6 +126,6 @@
         <placement idx="1" position="0.25,0.25,0.25" look_at="0,0,0" lens_focal_length="10" />
       </camera>
     </qt-opengl>
-  </visualization> 
+  </visualization> -->
 
 </argos-configuration>

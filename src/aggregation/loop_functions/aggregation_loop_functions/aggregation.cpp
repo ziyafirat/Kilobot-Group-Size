@@ -38,7 +38,7 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 	GetNodeAttributeOrDefault(t_tree, "nBots", nBots, nBots);
 
 	GetNodeAttributeOrDefault(t_tree, "aParam", a, a);
-	GetNodeAttributeOrDefault(t_tree, "bParam", b, b);
+	GetNodeAttributeOrDefault(t_tree, "commRange", commRange, commRange);
 
 	GetNodeAttributeOrDefault(t_tree, "link", link, link);
 
@@ -95,10 +95,11 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 		AddEntity(*box);
 	}
 
+
 	CKilobotEntity *pcKB;
 	for (int i = 0; i < nBots; ++i) {
 		pcKB = new CKilobotEntity("" + ToString(i), "kbc", CVector3(0, 0, 0),
-				CQuaternion(0, 0, 0, 0), 0.07);
+				CQuaternion(0, 0, 0, 0), commRange);
 		bots.push_back(pcKB);
 		AddEntity(*pcKB);
 	}

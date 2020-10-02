@@ -127,6 +127,7 @@ private:   /**
    Real beacon_red_count;
    float a;
    float b;
+   float commRange;
 
    double m;
 

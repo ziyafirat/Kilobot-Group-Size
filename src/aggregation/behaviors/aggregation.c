@@ -19,7 +19,7 @@
 #define TWO_PI 2.0*PI
 
 #define COMPLETE_TURN 70
-#define TOO_CLOSE_DISTANCE 140
+#define TOO_CLOSE_DISTANCE 500
 #define DESIRED_DISTANCE 60
 #define PROB_DISTANCE 60
 
@@ -36,7 +36,7 @@
 int informed_size_blue_beacon = 2 ;
 int informed_size_red_beacon = 18;
 int total_informed_size = 20;
-
+int goNearBeacon=1000;
 int N_neighbors = 0;
 
 int next_turn, turn_turn;
@@ -330,7 +330,7 @@ void stay() {
 		neighbours_size_while_joining = N_neighbors;
 		leave_flag = 0;
 		flag_join_n = 0;
-		stay_flag = 1000;
+		stay_flag = goNearBeacon;
 	}
 }
 

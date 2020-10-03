@@ -33,9 +33,9 @@
 
 //debug_info_t dddsds;
 // Track the number of nearest neighbors
-int informed_size_blue_beacon = 2 ;
-int informed_size_red_beacon = 18;
-int total_informed_size = 20;
+int informed_size_blue_beacon = 20 ;
+int informed_size_red_beacon = 20;
+int total_informed_size = 40;
 int goNearBeacon=1000;
 int N_neighbors = 0;
 

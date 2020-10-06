@@ -33,10 +33,10 @@
 
 //debug_info_t dddsds;
 // Track the number of nearest neighbors
-int informed_size_blue_beacon = 20 ;
-int informed_size_red_beacon = 20;
-int total_informed_size = 40;
-int goNearBeacon=1000;
+int informed_size_blue_beacon = 1 ;
+int informed_size_red_beacon = 14;
+int total_informed_size = 15;
+int goNearBeacon=2000;
 int N_neighbors = 0;
 
 int next_turn, turn_turn;
@@ -344,7 +344,7 @@ void leave() {
 // 				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 20) {
+		if (flag_join_n < 200) {
 			flag_join_n++;
 
 		} else {

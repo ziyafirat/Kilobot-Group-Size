@@ -344,7 +344,7 @@ void leave() {
 // 				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 200) {
+		if (flag_join_n < 200) { //physical kilobot 20 second
 			flag_join_n++;
 
 		} else {

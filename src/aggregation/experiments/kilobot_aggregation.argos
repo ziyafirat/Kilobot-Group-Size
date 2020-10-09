@@ -122,7 +122,7 @@
     <qt-opengl>
   <user_functions library="build/aggregation/loop_functions/word_loop_functions/libword_loop_functions" label="word_qtuser_functions" />
       <camera>
-        <placement idx="0" position="0,0,0.9" look_at="0,0,0" lens_focal_length="15" />
+        <placement idx="0" position="0,0,0.9" look_at="0,0,0" lens_focal_length="25" />
         <placement idx="1" position="0.25,0.25,0.25" look_at="0,0,0" lens_focal_length="10" />
       </camera>
     </qt-opengl>

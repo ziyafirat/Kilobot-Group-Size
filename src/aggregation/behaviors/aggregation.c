@@ -33,10 +33,10 @@
 
 //debug_info_t dddsds;
 // Track the number of nearest neighbors
-int informed_size_blue_beacon = 1 ;
-int informed_size_red_beacon = 14;
-int total_informed_size = 15;
-int goNearBeacon=2000;
+int informed_size_blue_beacon = 2 ;
+int informed_size_red_beacon = 18;
+int total_informed_size = 20;
+int goNearBeacon = 1000;
 int N_neighbors = 0;
 
 int next_turn, turn_turn;
@@ -335,7 +335,7 @@ void stay() {
 }
 
 void leave() {
-	if (flag_join_n < 10) {
+	if (flag_join_n < 100) { // physical kilobot 10 seconds
 		neighbours_size_while_joining = N_neighbors;
 		flag_join_n++;
 
@@ -344,11 +344,11 @@ void leave() {
 // 				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 200) { //physical kilobot 20 second
+		if (flag_join_n < 200) { //physical kilobot 20 seconds
 			flag_join_n++;
 
 		} else {
-			flag_join_n = 10;
+			flag_join_n = 100; // physical kilobot 10 seconds
 
 			double p = 0;
 			int abs1 = abs(N_neighbors - neighbours_size_while_joining);

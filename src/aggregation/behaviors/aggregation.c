@@ -13,7 +13,7 @@
 // argos3 -c aggregation/experiments/kilobot_aggregation.argos
 
 #define PI_TURN 26
-#define STRAIGHT 400
+#define STRAIGHT 500
 #define RHO 0.6
 #define PI 3.14159265358979323846
 #define TWO_PI 2.0*PI
@@ -27,8 +27,8 @@
 #define BEACON_RED 60
 #define BEACON_WALL 90
 #define NON_INFORMED 0
-#define LEAVE_TIMESTEP 30
-#define STAY_TIMESTEP 30
+#define LEAVE_TIMESTEP 32
+#define STAY_TIMESTEP 32
 
 
 //debug_info_t dddsds;
@@ -36,7 +36,7 @@
 int informed_size_blue_beacon = 2 ;
 int informed_size_red_beacon = 18;
 int total_informed_size = 20;
-int goNearBeacon = 1000;
+int goNearBeacon = 2000;
 int N_neighbors = 0;
 
 int next_turn, turn_turn;
@@ -122,7 +122,7 @@ uint32_t turn_ticks = 60;
 
 unsigned int turning_ticks = 0;
 const uint8_t max_turning_ticks = 250; /* constant to allow a maximum rotation of 180 degrees with \omega=\pi/5 */
-const uint16_t max_straight_ticks = 400; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
+const uint16_t max_straight_ticks = 500; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
 uint32_t last_motion_ticks = 0;
 uint32_t turn_into_random_walker_ticks = 160; /* timestep to wait without any direction message before turning into random_walker */
 uint32_t last_direction_msg = 0;
@@ -143,43 +143,43 @@ void purge(void) {
 	}
 }
 
-void write_coords(char *header, int kilo_uid, int id, int N_neighbors,
-		int neighbours_size_while_joining, double exp1, double rl,
-		double Res1, int idx, int commit_state, int walk, int distance,
-		int kilo_ticks) {
-
-	printf(
-			"%s kilo_uid:%i  id:%i  Neighbors:%i N_join:%i  exp1:%f  rl:%f  Res1:%f idx:%i state:%i walk:%i  distance:%i  ticks:%i \n",
-			header, kilo_uid, id, N_neighbors, neighbours_size_while_joining,
-			exp1, rl, Res1, idx, commit_state, walk, distance, kilo_ticks);
-	FILE *fPointer_GOD;
-	char str_GOD[100];
-	sprintf(str_GOD, "datalog/robotid_%i.csv", kilo_uid);
-	fPointer_GOD = fopen(str_GOD, "a");
-	fprintf(fPointer_GOD,
-			"%s kilo_uid:%i  id:%i  Neighbors:%i N_join:%i  exp1:%f  rl:%f  Res1:%f idx:%i state:%i walk:%i  distance:%i  ticks:%i \n",
-			header, kilo_uid, id, N_neighbors, neighbours_size_while_joining,
-			exp1, rl, Res1, idx, commit_state, walk, distance, kilo_ticks);
-
-	fclose(fPointer_GOD);
-}
-
-void write_coords_timer(char *header, int kilo_uid,  int count, int commit_state, int kilo_ticks) {
-
+//void write_coords(char *header, int kilo_uid, int id, int N_neighbors,
+//		int neighbours_size_while_joining, double exp1, double rl,
+//		double Res1, int idx, int commit_state, int walk, int distance,
+//		int kilo_ticks) {
+//
 //	printf(
 //			"%s kilo_uid:%i  id:%i  Neighbors:%i N_join:%i  exp1:%f  rl:%f  Res1:%f idx:%i state:%i walk:%i  distance:%i  ticks:%i \n",
 //			header, kilo_uid, id, N_neighbors, neighbours_size_while_joining,
 //			exp1, rl, Res1, idx, commit_state, walk, distance, kilo_ticks);
-	FILE *fPointer_GOD;
-	char str_GOD[100];
-	sprintf(str_GOD, "data/robotid_%i_%i_%i.csv", informed_size_blue_beacon,informed_size_red_beacon,kilo_uid);
-	fPointer_GOD = fopen(str_GOD, "a");
-	fprintf(fPointer_GOD,
-			"%i	%i	%i	%i \n",
-			kilo_uid, count, commit_state, kilo_ticks);
-
-	fclose(fPointer_GOD);
-}
+//	FILE *fPointer_GOD;
+//	char str_GOD[100];
+//	sprintf(str_GOD, "datalog/robotid_%i.csv", kilo_uid);
+//	fPointer_GOD = fopen(str_GOD, "a");
+//	fprintf(fPointer_GOD,
+//			"%s kilo_uid:%i  id:%i  Neighbors:%i N_join:%i  exp1:%f  rl:%f  Res1:%f idx:%i state:%i walk:%i  distance:%i  ticks:%i \n",
+//			header, kilo_uid, id, N_neighbors, neighbours_size_while_joining,
+//			exp1, rl, Res1, idx, commit_state, walk, distance, kilo_ticks);
+//
+//	fclose(fPointer_GOD);
+//}
+//
+//void write_coords_timer(char *header, int kilo_uid,  int count, int commit_state, int kilo_ticks) {
+//
+////	printf(
+////			"%s kilo_uid:%i  id:%i  Neighbors:%i N_join:%i  exp1:%f  rl:%f  Res1:%f idx:%i state:%i walk:%i  distance:%i  ticks:%i \n",
+////			header, kilo_uid, id, N_neighbors, neighbours_size_while_joining,
+////			exp1, rl, Res1, idx, commit_state, walk, distance, kilo_ticks);
+//	FILE *fPointer_GOD;
+//	char str_GOD[100];
+//	sprintf(str_GOD, "data/robotid_%i_%i_%i.csv", informed_size_blue_beacon,informed_size_red_beacon,kilo_uid);
+//	fPointer_GOD = fopen(str_GOD, "a");
+//	fprintf(fPointer_GOD,
+//			"%i	%i	%i	%i \n",
+//			kilo_uid, count, commit_state, kilo_ticks);
+//
+//	fclose(fPointer_GOD);
+//}
 
 
 /*-------------------------------------------------------------------*/
@@ -335,7 +335,7 @@ void stay() {
 }
 
 void leave() {
-	if (flag_join_n < 100) { // physical kilobot 10 seconds
+	if (flag_join_n < 10) { // physical kilobot 10 seconds
 		neighbours_size_while_joining = N_neighbors;
 		flag_join_n++;
 
@@ -344,11 +344,11 @@ void leave() {
 // 				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 200) { //physical kilobot 20 seconds
+		if (flag_join_n < 20) { //physical kilobot 20 seconds
 			flag_join_n++;
 
 		} else {
-			flag_join_n = 100; // physical kilobot 10 seconds
+			flag_join_n = 10; // physical kilobot 10 seconds
 
 			double p = 0;
 			int abs1 = abs(N_neighbors - neighbours_size_while_joining);
@@ -377,11 +377,9 @@ void leave() {
 //			write_coords("c_leave ", kilo_uid, 0, N_neighbors,
 //					neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
 //					walk, distance, kilo_ticks);
+
 			if (rl < p) { //leave
 
-//				write_coords("leaving ", kilo_uid, 0, N_neighbors,
-//						neighbours_size_while_joining, exp1, rl, Res1, 0,
-//						commit_state, walk, distance, kilo_ticks);
 				walk = 1;
 
 				commit_state = uncommited;
@@ -397,7 +395,15 @@ void leave() {
 				N_neighbors = 0;
 				flag_join_n = 0;
 
+//				write_coords("leaving.. ", kilo_uid, 0, N_neighbors,
+//								neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
+//								walk, distance, kilo_ticks);
+
 			}
+
+//			write_coords("c_leave2 ", kilo_uid, 0, N_neighbors,
+//							neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
+//							walk, distance, kilo_ticks);
 
 			msgs_size = 0;
 			N_neighbors = 0;
@@ -596,7 +602,7 @@ void loop() {
 		} else //STAY
 		{
 			set_motion(STOP);
-			if (kilo_ticks > last_state_ticks + LEAVE_TIMESTEP) {
+			if (kilo_ticks > last_state_ticks + LEAVE_TIMESTEP) { //32 clocktick= 1 second
 				last_state_ticks = kilo_ticks;
 				leave();
 			}

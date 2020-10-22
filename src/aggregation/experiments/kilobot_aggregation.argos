@@ -102,7 +102,7 @@
 
   <!-- ******************* -->
   <!-- * Physics engines * -->
-  <!-- ******************* -->s
+  <!-- ******************* -->
   <physics_engines>
     <dynamics2d id="dyn2d" />
   </physics_engines>

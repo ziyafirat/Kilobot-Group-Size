@@ -20,8 +20,8 @@
 
 #define COMPLETE_TURN 70
 #define TOO_CLOSE_DISTANCE 500
-#define DESIRED_DISTANCE 60
-#define PROB_DISTANCE 60
+#define DESIRED_DISTANCE 55
+#define PROB_DISTANCE 55
 
 #define BEACON_BLUE 30
 #define BEACON_RED 60
@@ -335,7 +335,7 @@ void stay() {
 }
 
 void leave() {
-	if (flag_join_n < 10) { // physical kilobot 10 seconds
+	if (flag_join_n < 100) { // physical kilobot 10 seconds
 		neighbours_size_while_joining = N_neighbors;
 		flag_join_n++;
 
@@ -344,11 +344,11 @@ void leave() {
 // 				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 20) { //physical kilobot 20 seconds
+		if (flag_join_n < 200) { //physical kilobot 20 seconds
 			flag_join_n++;
 
 		} else {
-			flag_join_n = 10; // physical kilobot 10 seconds
+			flag_join_n = 100; // physical kilobot 10 seconds
 
 			double p = 0;
 			int abs1 = abs(N_neighbors - neighbours_size_while_joining);

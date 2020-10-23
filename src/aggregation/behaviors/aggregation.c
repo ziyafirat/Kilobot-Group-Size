@@ -672,6 +672,7 @@ void message_rx(message_t *m, distance_measurement_t *d) {
 
 //		write_coords("data5 ", kilo_uid, id, N_neighbors, 0, 0, 0, 0,
 //				distance_beacon, commit_state, walk, distance, kilo_ticks);
+		//test
 
 	}
 

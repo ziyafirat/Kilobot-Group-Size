@@ -74,14 +74,26 @@
            medium="leds"/>
 
     <kilobot id="beacon_red" communication_range="0.50">
-      <body position="-1.2,0,0" orientation="0,0,0" />
+      <body position="-0.9,0,0" orientation="0,0,0" />
+      <controller config="beacon_red" />
+      <dynamics2d friction="0.7" />
+    </kilobot>
+
+<kilobot id="beacon_red2" communication_range="0.50">
+      <body position="-1.3,0,0" orientation="0,0,0" />
       <controller config="beacon_red" />
       <dynamics2d friction="0.7" />
     </kilobot>
 
 
     <kilobot id="beacon_blue" communication_range="0.50">
-      <body position="1.2,0,0" orientation="0,0,0" />
+      <body position="0.9,0,0" orientation="0,0,0" />
+      <controller config="beacon_blue" />
+      <dynamics2d friction="0.7" />
+    </kilobot>
+
+    <kilobot id="beacon_blue2" communication_range="0.50">
+      <body position="1.3,0,0" orientation="0,0,0" />
       <controller config="beacon_blue" />
       <dynamics2d friction="0.7" />
     </kilobot>

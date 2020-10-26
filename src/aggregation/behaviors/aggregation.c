@@ -36,7 +36,7 @@
 int informed_size_blue_beacon = 2 ;
 int informed_size_red_beacon = 18;
 int total_informed_size = 20;
-int goNearBeacon = 2000;
+int goNearBeacon = 4000;
 int N_neighbors = 0;
 
 int next_turn, turn_turn;

@@ -20,8 +20,8 @@
 
 #define COMPLETE_TURN 70
 #define TOO_CLOSE_DISTANCE 500
-#define DESIRED_DISTANCE 55
-#define PROB_DISTANCE 55
+#define DESIRED_DISTANCE 50
+#define PROB_DISTANCE 50
 
 #define BEACON_BLUE 30
 #define BEACON_RED 60
@@ -33,10 +33,10 @@
 
 //debug_info_t dddsds;
 // Track the number of nearest neighbors
-int informed_size_blue_beacon = 2 ;
-int informed_size_red_beacon = 18;
-int total_informed_size = 20;
-int goNearBeacon = 4000;
+int informed_size_blue_beacon = 1 ;
+int informed_size_red_beacon = 14;
+int total_informed_size = 15;
+int goNearBeacon = 2000;
 int N_neighbors = 0;
 
 int next_turn, turn_turn;
@@ -335,7 +335,7 @@ void stay() {
 }
 
 void leave() {
-	if (flag_join_n < 100) { // physical kilobot 10 seconds
+	if (flag_join_n < 200) { // physical kilobot 10 seconds
 		neighbours_size_while_joining = N_neighbors;
 		flag_join_n++;
 
@@ -344,16 +344,16 @@ void leave() {
 // 				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 200) { //physical kilobot 20 seconds
+		if (flag_join_n < 400) { //physical kilobot 20 seconds
 			flag_join_n++;
 
 		} else {
-			flag_join_n = 100; // physical kilobot 10 seconds
+			flag_join_n = 200; // physical kilobot 10 seconds
 
 			double p = 0;
 			int abs1 = abs(N_neighbors - neighbours_size_while_joining);
 			int k = 18;
-			double exp1 = -3.6 * (k - abs1);
+			double exp1 = -2.0 * (k - abs1);
 			double Res1 = (double) exp(exp1);
 			//if (Res1 < 1 && Res1 > 0) {
 			if (kilo_uid >= total_informed_size) { // if robot non informed robot

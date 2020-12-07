@@ -4,6 +4,10 @@
 #include <cstring>
 #include <cerrno>
 #include <argos3/plugins/robots/kilobot/control_interface/ci_kilobot_controller.h>
+#include <argos3/plugins/robots/kilobot/simulator/kilobot_measures.h>
+#include <argos3/core/simulator/simulator.h>
+#include <argos3/core/utility/configuration/argos_configuration.h>
+#include <argos3/plugins/robots/kilobot/simulator/kilobot_entity.h>
 //#include <aggregation/behaviors/aggregation.c>
 /****************************************/
 /****************************************/
@@ -44,6 +48,17 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 
 	GetNodeAttributeOrDefault(t_tree, "mutation", m, m);
 
+	GetNodeAttribute(t_tree, "totalSpots", totalSpots);
+	GetNodeAttribute(t_tree, "radiusSpot", m_fRadius);
+	GetNodeAttribute(t_tree, "blackSpotSize", blackSpotVector);
+	GetNodeAttribute(t_tree, "whiteSpotSize", whiteSpotVector);
+	GetNodeAttributeOrDefault(t_tree, "minDist", minDist, minDist);
+	GetNodeAttributeOrDefault(t_tree, "timeStopCond", timeStopCond,
+			timeStopCond);
+
+	m_cCoordBlackSpot = CVector2(-blackSpotVector, 0);
+	m_cCoordWhiteSpot = CVector2(whiteSpotVector, 0);
+
 	/* Open the file for text writing */
 	m_cOutFile.open(m_strOutFile.c_str(),
 			std::ofstream::out | std::ofstream::trunc);
@@ -59,7 +74,7 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 //	informed_size_red_beacon = 5;
 //	total_informed_size = 10;
 
-	////////////////////////////////////////////////////////////////////////////////// CREATION AND POSITIONING OF THE ARENA WALLS////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////// CREATION AND POSITIONING OF THE ARENA WALLS////////////////////////////////////////////////////////////////////////////////
 	CVector3 arena_size = GetSpace().GetArenaSize();
 	float m_fArenaRadius = Min(arena_size[0], arena_size[1]) / 2;
 	/*switch(nBots) {
@@ -95,7 +110,6 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 		AddEntity(*box);
 	}
 
-
 	CKilobotEntity *pcKB;
 	for (int i = 0; i < nBots; ++i) {
 		pcKB = new CKilobotEntity("" + ToString(i), "kbc", CVector3(0, 0, 0),
@@ -105,6 +119,7 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 	}
 
 	PlaceBots(m_fArenaRadius);
+
 }
 
 void CAggregation::PlaceBots(float m_fArenaRadius) {
@@ -148,7 +163,6 @@ void CAggregation::PlaceBots(float m_fArenaRadius) {
 	}
 
 }
-
 
 /****************************************/
 /****************************************/
@@ -319,45 +333,128 @@ void CAggregation::PreStep() {
 ////	}
 //}
 
-
 void CAggregation::PostStep() {
 	int clock = GetSpace().GetSimulationClock();
-	if (clock % 100 == 0) {
+	if (clock % 10 == 0) {
 
 		beacon_blue_count = 0;
 		beacon_red_count = 0;
-		m_cOutFile << clock << "	";
+		//m_cOutFile << clock << "	";
 		for (unsigned int i = 0; i < bots.size(); ++i) {
 			CKilobotEntity &kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
 			CKilobotCommunicationEntity kilocomm =
 					kbEntity.GetKilobotCommunicationEntity();
 
 			CColor color = bots[i]->GetLEDEquippedEntity().GetLED(0).GetColor();
-			CColor cl;
-			 // update kb led color
-			//CColor color1 = kbEntity.GetLEDEquippedEntity().GetLED(0).GetColor();
-			//CColor color2 = kbEntity.GetLEDEquippedEntity().GetLED(1).GetColor();
-			 //color.
-//			 CLEDEquippedEntity cled = kbEntity.GetLEDEquippedEntity();
-//			  cled.GetLEDs();
-			 LOG << i<<"- color:" <<  color << std::endl;
-			 if(color.GetGreen()>0)
-			 {
 
-			 }
-			 else{
-				 if(color.GetBlue()>0){
-					 beacon_blue_count += 1;
-					 LOG << "blue:" <<  beacon_blue_count << std::endl;
-				 }
-				 else if(color.GetRed()>0)
-				 {
-					 beacon_red_count += 1;
-					 LOG << "red:" <<  beacon_red_count << std::endl;
-				 }
-			 }
+			//CColor cl;
 
-			 //kilobot_state_t* ptState = kbEntity->GetRobotState();
+			CVector2 c_kilobot_xy_position(
+					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX(),
+					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY());
+			m_cKilobotOriginalPositions.push_back(c_kilobot_xy_position);
+
+			Real fDistanceSpotBlack =
+					(m_cCoordBlackSpot - c_kilobot_xy_position).Length();
+			Real fDistanceSpotWhite =
+					(m_cCoordWhiteSpot - c_kilobot_xy_position).Length();
+			if (fDistanceSpotBlack <= m_fRadius && totalSpots >= 2) {
+
+				//color.SetBlue(1);
+				LOG << i << "- bluespotJoin:" << c_kilobot_xy_position
+						<< std::endl;
+
+				message_t msg = *(new message_t());
+				msg.type = NORMAL;
+				msg.data[0] = 198;
+				msg.data[1] = 198;
+				msg.data[2] = 0;
+				msg.data[5] = 30;
+				msg.crc = 0;				//message_crc(&msg);
+				GetSimulator().GetMedium<CKilobotCommunicationMedium>(
+						"kilocomm").SendOHCMessageTo(kbEntity, &msg);
+//				if (clock % 100 == 0) {
+//					beacon_blue_count += 1;
+//				}
+			} else if (fDistanceSpotWhite <= m_fRadius && totalSpots >= 2) {
+				//color.SetBlue(1);
+				LOG << i << "- redspotJoin:" << c_kilobot_xy_position
+						<< std::endl;
+
+				message_t msg = *(new message_t());
+				msg.type = NORMAL;
+				msg.data[0] = 199;
+				msg.data[1] = 199;
+				msg.data[2] = 1;
+				msg.data[5] = 60;
+				msg.crc = 0;				//message_crc(&msg);
+				GetSimulator().GetMedium<CKilobotCommunicationMedium>(
+						"kilocomm").SendOHCMessageTo(kbEntity, &msg);
+//				if (clock % 100 == 0) {
+//					beacon_red_count += 1;
+//				}
+
+			} else {
+				//LOG << i << "- spotleave:" << c_kilobot_xy_position<< std::endl;
+				message_t msg = *(new message_t());
+				msg.type = NORMAL;
+				msg.data[0] = 197;
+				msg.data[1] = 197;
+				msg.data[2] = 2;
+				msg.data[5] = 70;
+				msg.crc = 0;				//message_crc(&msg);
+				GetSimulator().GetMedium<CKilobotCommunicationMedium>(
+						"kilocomm").SendOHCMessageTo(kbEntity, &msg);
+
+			}
+
+//			Real fDistanceSpotWhite =
+//					(m_cCoordWhiteSpot - c_kilobot_xy_position).Length();
+//			if (fDistanceSpotWhite <= m_fRadius && totalSpots >= 2) {
+//				//color.SetBlue(1);
+//				LOG << i << "- redspot:" << c_kilobot_xy_position << std::endl;
+//
+//				message_t msg = *(new message_t());
+//				msg.type = NORMAL;
+//				msg.data[0] = 199;
+//				msg.data[1] = 199;
+//				msg.data[2] = 1;
+//				msg.data[5] = 60;
+//				msg.crc = 0;				//message_crc(&msg);
+//				GetSimulator().GetMedium<CKilobotCommunicationMedium>(
+//						"kilocomm").SendOHCMessageTo(kbEntity, &msg);
+//
+//			}
+//			else {
+//				LOG << i << "- redspotleave:" << c_kilobot_xy_position << std::endl;
+//				message_t msg = *(new message_t());
+//				msg.type = NORMAL;
+//				msg.data[0] = 199;
+//				msg.data[1] = 199;
+//				msg.data[2] = 2;
+//				msg.data[5] = 60;
+//				msg.crc = 0;				//message_crc(&msg);
+//				GetSimulator().GetMedium<CKilobotCommunicationMedium>(
+//						"kilocomm").SendOHCMessageTo(kbEntity, &msg);
+//
+//			}
+//
+//
+			if (clock % 100 == 0) {
+				LOG << i << "- color:" << color << std::endl;
+				if (color.GetGreen() > 0) {
+
+				} else {
+					if (color.GetBlue() > 0) {
+						beacon_blue_count += 1;
+						LOG << "blue:" << beacon_blue_count << std::endl;
+					} else if (color.GetRed() > 0) {
+						beacon_red_count += 1;
+						LOG << "red:" << beacon_red_count << std::endl;
+					}
+				}
+			}
+			//kilobot_state_t* ptState = kbEntity->GetRobotState();
 			//m_vecKilobotColors
 //			GetKilobotLedColor(kbEntity);
 //			int state = 2;
@@ -374,12 +471,15 @@ void CAggregation::PostStep() {
 
 		}
 
-		m_cOutFile << beacon_blue_count / bots.size() << "	"
-				<< beacon_red_count / bots.size() << "	";
-		m_cOutFile << endl;
+		if (clock % 100 == 0) {
+			m_cOutFile << clock
+			<< "	" << beacon_blue_count / bots.size() << "	"
+			<< beacon_red_count / bots.size() << "	";
+			m_cOutFile << endl;
+		}
 	}
-}
 
+}
 
 //void CAggregation::PostStep() {
 //   /* Go through the kilobots */
@@ -461,6 +561,65 @@ void CAggregation::PostStep() {
 
 /****************************************/
 /****************************************/
+
+argos::CColor CAggregation::GetFloorColor(
+		const argos::CVector2 &c_position_on_plane) {
+
+	if (totalSpots == 2) {
+//2 spots
+		CVector2 vCurrentPoint(c_position_on_plane.GetX(),
+				c_position_on_plane.GetY());
+		Real d = (m_cCoordBlackSpot - vCurrentPoint).Length();
+		if (d <= m_fRadius) {
+			return CColor::BLACK;
+		}
+		d = (vCurrentPoint - m_cCoordWhiteSpot).Length();
+		if (d <= m_fRadius) {
+			return CColor::WHITE;
+		}
+
+	} else if (totalSpots == 3) {
+//3 spots
+		CVector2 vCurrentPoint(c_position_on_plane.GetX(),
+				c_position_on_plane.GetY());
+		Real d = (m_cCoordBlackSpot - vCurrentPoint).Length();
+		if (d <= m_fRadius) {
+			return CColor::BLACK;
+		}
+		d = (vCurrentPoint - m_cCoordWhiteSpot).Length();
+		if (d <= m_fRadius) {
+			return CColor::WHITE;
+		}
+		d = (vCurrentPoint - m_cCoordWhiteSpot2).Length();
+		if (d <= (m_fRadius)) {
+			return CColor::WHITE;
+		}
+
+	} else if (totalSpots == 4) {
+
+//// 4 spots
+		CVector2 vCurrentPoint(c_position_on_plane.GetX(),
+				c_position_on_plane.GetY());
+		Real d = (m_cCoordBlackSpot - vCurrentPoint).Length();
+		if (d <= m_fRadius) {
+			return CColor::BLACK;
+		}
+		d = (m_cCoordBlackSpot2 - vCurrentPoint).Length();
+		if (d <= m_fRadius) {
+			return CColor::BLACK;
+		}
+		d = (vCurrentPoint - m_cCoordWhiteSpot).Length();
+		if (d <= m_fRadius) {
+			return CColor::WHITE;
+		}
+		d = (vCurrentPoint - m_cCoordWhiteSpot2).Length();
+		if (d <= (m_fRadius)) {
+			return CColor::WHITE;
+		}
+	}
+
+	return CColor::WHITE;
+}
 
 /* Register this loop functions into the ARGoS plugin system */
 REGISTER_LOOP_FUNCTIONS(CAggregation, "aggregation_loop_functions");

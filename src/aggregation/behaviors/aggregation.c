@@ -13,15 +13,15 @@
 // argos3 -c aggregation/experiments/kilobot_aggregation.argos
 
 #define PI_TURN 26
-#define STRAIGHT 500
+#define STRAIGHT 1000
 #define RHO 0.6
 #define PI 3.14159265358979323846
 #define TWO_PI 2.0*PI
 
 #define COMPLETE_TURN 70
-#define TOO_CLOSE_DISTANCE 500
+#define TOO_CLOSE_DISTANCE 140
 #define DESIRED_DISTANCE 50
-#define PROB_DISTANCE 50
+#define PROB_DISTANCE 60
 
 #define BEACON_BLUE 30
 #define BEACON_RED 60
@@ -30,15 +30,16 @@
 #define LEAVE_TIMESTEP 32
 #define STAY_TIMESTEP 32
 
-
-//debug_info_t dddsds;
+//debug_info_t test;
 // Track the number of nearest neighbors
-int informed_size_blue_beacon = 1 ;
-int informed_size_red_beacon = 14;
+//that part for python change line 36,37,38,39----------------------
+int informed_size_blue_beacon = 7;
+int informed_size_red_beacon = 8;
 int total_informed_size = 15;
-int goNearBeacon = 2000;
-int N_neighbors = 0;
+int goNearBeacon = 130;
+//------------------------------------------------------------------
 
+int N_neighbors = 0;
 int next_turn, turn_turn;
 char walk;
 
@@ -53,7 +54,6 @@ int walls_flag;
 unsigned char mes_from;
 unsigned char mes_payload;
 unsigned char rec_quality[2];
-
 
 char motion_state;
 int new_message;
@@ -78,9 +78,7 @@ int turn_side;
 int turn_time;
 char motion_state;
 int count_timer_log;
-
-
-
+int loopflag = 0;
 
 // Declare a structure to represent each neighbor
 typedef struct {
@@ -122,7 +120,7 @@ uint32_t turn_ticks = 60;
 
 unsigned int turning_ticks = 0;
 const uint8_t max_turning_ticks = 250; /* constant to allow a maximum rotation of 180 degrees with \omega=\pi/5 */
-const uint16_t max_straight_ticks = 500; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
+const uint16_t max_straight_ticks = 1000; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
 uint32_t last_motion_ticks = 0;
 uint32_t turn_into_random_walker_ticks = 160; /* timestep to wait without any direction message before turning into random_walker */
 uint32_t last_direction_msg = 0;
@@ -144,9 +142,8 @@ void purge(void) {
 }
 
 //void write_coords(char *header, int kilo_uid, int id, int N_neighbors,
-//		int neighbours_size_while_joining, double exp1, double rl,
-//		double Res1, int idx, int commit_state, int walk, int distance,
-//		int kilo_ticks) {
+//		int neighbours_size_while_joining, double exp1, double rl, double Res1,
+//		int idx, int commit_state, int walk, int distance, int kilo_ticks) {
 //
 //	printf(
 //			"%s kilo_uid:%i  id:%i  Neighbors:%i N_join:%i  exp1:%f  rl:%f  Res1:%f idx:%i state:%i walk:%i  distance:%i  ticks:%i \n",
@@ -180,7 +177,6 @@ void purge(void) {
 //
 //	fclose(fPointer_GOD);
 //}
-
 
 /*-------------------------------------------------------------------*/
 /* Function for setting the motor speed                              */
@@ -229,7 +225,7 @@ void setup() {
 	msgs_size = 0;
 	N_neighbors = 0;
 
-	count_timer_log=0;
+	count_timer_log = 0;
 	message.type = NORMAL;
 // 	if (kilo_uid < informed_size_blue_beacon) { // blue informed
 
@@ -335,25 +331,25 @@ void stay() {
 }
 
 void leave() {
-	if (flag_join_n < 200) { // physical kilobot 10 seconds
+	if (flag_join_n < 100) { // physical kilobot 10 seconds
 		neighbours_size_while_joining = N_neighbors;
 		flag_join_n++;
 
-// 		write_coords("Joined ", kilo_uid, 0, N_neighbors,
-// 				neighbours_size_while_joining, 0, 0, 0, 0, commit_state, walk,
-// 				distance, kilo_ticks);
+//		write_coords("Joined ", kilo_uid, 0, N_neighbors,
+//				neighbours_size_while_joining, 0, 0, 0, 0, commit_state, walk,
+//				distance, kilo_ticks);
 	} else {
 
-		if (flag_join_n < 400) { //physical kilobot 20 seconds
+		if (flag_join_n < 200) { //physical kilobot 20 seconds
 			flag_join_n++;
 
 		} else {
-			flag_join_n = 200; // physical kilobot 10 seconds
+			flag_join_n = 100; // physical kilobot 10 seconds
 
 			double p = 0;
 			int abs1 = abs(N_neighbors - neighbours_size_while_joining);
 			int k = 18;
-			double exp1 = -2.0 * (k - abs1);
+			double exp1 = -2.8 * (k - abs1);
 			double Res1 = (double) exp(exp1);
 			//if (Res1 < 1 && Res1 > 0) {
 			if (kilo_uid >= total_informed_size) { // if robot non informed robot
@@ -378,10 +374,10 @@ void leave() {
 //					neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
 //					walk, distance, kilo_ticks);
 
-			if (rl < p) { //leave
+			if (rl < p || loopflag == 0) { //leave
 
 				walk = 1;
-
+				loopflag=0;
 				commit_state = uncommited;
 				mes_payload = 0;
 				agg_site = 0;
@@ -396,14 +392,14 @@ void leave() {
 				flag_join_n = 0;
 
 //				write_coords("leaving.. ", kilo_uid, 0, N_neighbors,
-//								neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
-//								walk, distance, kilo_ticks);
+//						neighbours_size_while_joining, exp1, rl, p, 0,
+//						commit_state, walk, distance, kilo_ticks);
 
 			}
 
 //			write_coords("c_leave2 ", kilo_uid, 0, N_neighbors,
-//							neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
-//							walk, distance, kilo_ticks);
+//					neighbours_size_while_joining, exp1, rl, p, 0, commit_state,
+//					walk, distance, kilo_ticks);
 
 			msgs_size = 0;
 			N_neighbors = 0;
@@ -482,10 +478,9 @@ void random_walk() {
 }
 void loop() {
 
-	if (kilo_ticks % 100 == 0)
-	{
+	if (kilo_ticks % 100 == 0) {
 
-		count_timer_log=count_timer_log+1;
+		count_timer_log = count_timer_log + 1;
 		//message.data[2] = commit_state;
 		//write_coords_timer("timer ", kilo_uid, count_timer_log, commit_state, kilo_ticks);
 	}
@@ -498,6 +493,9 @@ void loop() {
 		random_walk();
 
 	} else {
+
+//		write_coords("Loop- ", kilo_uid, 0, N_neighbors, stay_flag, 0,
+//							0, 0, 0, message.data[2], walk, distance, kilo_ticks);
 		if (stay_flag > 0) {
 
 //			write_coords("stay_flag1 ", kilo_uid, 0, N_neighbors, stay_flag, 0,
@@ -507,19 +505,20 @@ void loop() {
 			if (new_message) {
 				new_message = 0;
 
-				if (distance>0 && distance < DESIRED_DISTANCE
+				if (distance > 0 && distance < DESIRED_DISTANCE
 						&& neighbor_commit_state < uncommited) {
 //					write_coords("stay_flag2 ", kilo_uid, 0, N_neighbors,
 //							stay_flag, 0, 0, 0, 0, commit_state, walk, distance,
 //							kilo_ticks);
 					stay_flag = 0;
 				}
-
+//
 //				write_coords("stay_flag ", kilo_uid, 0, N_neighbors, stay_flag,
 //						0, 0, 0, 0, commit_state, walk, distance, kilo_ticks);
 
 				if (stay_flag <= 2) {
-					if (distance_beacon>0 && distance_beacon < TOO_CLOSE_DISTANCE) {
+					if (distance_beacon
+							> 0&& distance_beacon < TOO_CLOSE_DISTANCE) {
 						stay_flag = 0;
 					} else {
 						stay_flag = 0;
@@ -613,7 +612,6 @@ void loop() {
 
 }
 
-
 message_t* message_tx() {
 	return &message;
 }
@@ -634,6 +632,7 @@ void message_rx(message_t *m, distance_measurement_t *d) {
 	int id = m->data[1];
 	walls_flag = m->data[5];
 	neighbor_commit_state = m->data[2];
+
 //	if (m->data[5] == BEACON_BLUE || m->data[5] == BEACON_RED) {
 	if (id < total_informed_size) {
 		if (commit_state < uncommited && distance < PROB_DISTANCE) {
@@ -657,21 +656,37 @@ void message_rx(message_t *m, distance_measurement_t *d) {
 //		write_coords("NO Neigh ", kilo_uid, id, N_neighbors, 0, 0, 0, 0, 0,
 //				commit_state, walk, distance, kilo_ticks);
 //	}
-	if (m->data[5] == BEACON_BLUE || m->data[5] == BEACON_RED) {
-
-		if (m->data[2] < uncommited) {
-			if (distance < TOO_CLOSE_DISTANCE) {
-				mes_from = m->data[6];
-				agg_site = m->data[5];
-				mes_payload = m->data[5];
-				new_message = 1;
-				distance_beacon = estimate_distance(d);
-
-			}
-		}
+	if (m->data[5] == BEACON_BLUE || m->data[5] == BEACON_RED || m->data[5] == 70) {
 
 //		write_coords("data5 ", kilo_uid, id, N_neighbors, 0, 0, 0, 0,
-//				distance_beacon, commit_state, walk, distance, kilo_ticks);
+//						distance_beacon, neighbor_commit_state, walk, distance, kilo_ticks);
+
+		if (m->data[2] < uncommited && loopflag == 0) {
+			//if (distance < TOO_CLOSE_DISTANCE) {
+//			write_coords("datacommitjoin ", kilo_uid, id, N_neighbors, 0, 0, 0,
+//					0, distance_beacon, neighbor_commit_state, walk, distance,
+//					kilo_ticks);
+			mes_from = m->data[6];
+			agg_site = m->data[5];
+			mes_payload = m->data[5];
+			new_message = 1;
+			distance_beacon = 10; // estimate_distance(d);
+			distance=10;
+			loopflag = 1;
+
+			//}
+		} else if (m->data[2] == uncommited && loopflag > 0) {
+//			write_coords("datacommitleave ", kilo_uid, id, N_neighbors, 0, 0, 0,
+//					0, distance_beacon, neighbor_commit_state, walk, distance,
+//					kilo_ticks);
+//			mes_from = m->data[6];
+//			agg_site = m->data[5];
+//			mes_payload = m->data[5];
+			new_message = 1;
+//			distance_beacon = 10; // estimate_distance(d);
+			loopflag = 0;
+		}
+
 		//test
 
 	}

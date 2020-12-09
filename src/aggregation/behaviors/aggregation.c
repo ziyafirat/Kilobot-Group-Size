@@ -33,10 +33,10 @@
 //debug_info_t test;
 // Track the number of nearest neighbors
 //that part for python change line 36,37,38,39----------------------
-int informed_size_blue_beacon = 7;
-int informed_size_red_beacon = 8;
-int total_informed_size = 15;
-int goNearBeacon = 130;
+int informed_size_blue_beacon = 2 ;
+int informed_size_red_beacon = 18;
+int total_informed_size = 20;
+int goNearBeacon = 300;
 //------------------------------------------------------------------
 
 int N_neighbors = 0;
@@ -349,7 +349,7 @@ void leave() {
 			double p = 0;
 			int abs1 = abs(N_neighbors - neighbours_size_while_joining);
 			int k = 18;
-			double exp1 = -2.8 * (k - abs1);
+			double exp1 = -3.6 * (k - abs1);
 			double Res1 = (double) exp(exp1);
 			//if (Res1 < 1 && Res1 > 0) {
 			if (kilo_uid >= total_informed_size) { // if robot non informed robot

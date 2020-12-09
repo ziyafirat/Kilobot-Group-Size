@@ -14,14 +14,14 @@
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="build/aggregation/loop_functions/aggregation_loop_functions/libaggregation_loop_functions" label="aggregation_loop_functions" nBots="50" output="test.txt" aParam="1.75" commRange="0.18" link="2" mutation="0.001" timeStopCond="0" />
+  <loop_functions library="build/aggregation/loop_functions/aggregation_loop_functions/libaggregation_loop_functions" label="aggregation_loop_functions" nBots="100" output="result.txt" aParam="1.75" commRange="0.10" link="2" mutation="0.001" timeStopCond="0" radiusSpot="0.44" blackSpotSize="1.2" whiteSpotSize="1.2" totalSpots="2" />
 
   <!-- *************** -->
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
 
-    <kilobot_controller id="beacon_blue">
+   <!-- <kilobot_controller id="beacon_blue">
       <actuators>
         <differential_steering implementation="default" />
 	<kilobot_led implementation="default" />
@@ -45,7 +45,7 @@
         <kilobot_light implementation="rot_z_only" />
       </sensors>
       <params behavior="build/aggregation/behaviors/beacon_red" />
-    </kilobot_controller>
+    </kilobot_controller>-->
 
     <kilobot_controller id="kbc">
       <actuators>
@@ -73,7 +73,7 @@
            intensity="1.0"
            medium="leds"/>
 
-    <kilobot id="beacon_red" communication_range="0.50">
+   <!-- <kilobot id="beacon_red" communication_range="0.50">
       <body position="-0.9,0,0" orientation="0,0,0" />
       <controller config="beacon_red" />
       <dynamics2d friction="0.7" />
@@ -96,7 +96,7 @@
       <body position="1.3,0,0" orientation="0,0,0" />
       <controller config="beacon_blue" />
       <dynamics2d friction="0.7" />
-    </kilobot>
+    </kilobot>-->
 
 
 

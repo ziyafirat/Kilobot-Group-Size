@@ -14,7 +14,7 @@
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="build/aggregation/loop_functions/aggregation_loop_functions/libaggregation_loop_functions" label="aggregation_loop_functions" nBots="100" output="result.txt" aParam="1.75" commRange="0.10" link="2" mutation="0.001" timeStopCond="0" radiusSpot="0.44" blackSpotSize="1.2" whiteSpotSize="1.2" totalSpots="2" />
+  <loop_functions library="build/aggregation/loop_functions/aggregation_loop_functions/libaggregation_loop_functions" label="aggregation_loop_functions" nBots="100" output="result.txt" aParam="1.75" commRange="0.20" link="2" mutation="0.001" timeStopCond="0" radiusSpot="0.44" blackSpotSize="1.2" whiteSpotSize="1.2" totalSpots="2" />
 
   <!-- *************** -->
   <!-- * Controllers * -->

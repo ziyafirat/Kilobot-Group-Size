@@ -13,7 +13,7 @@
 // argos3 -c aggregation/experiments/kilobot_aggregation.argos
 
 #define PI_TURN 26
-#define STRAIGHT 1000
+#define STRAIGHT 2000
 #define RHO 0.6
 #define PI 3.14159265358979323846
 #define TWO_PI 2.0*PI
@@ -21,7 +21,7 @@
 #define COMPLETE_TURN 70
 #define TOO_CLOSE_DISTANCE 140
 #define DESIRED_DISTANCE 50
-#define PROB_DISTANCE 60
+#define PROB_DISTANCE 80
 
 #define BEACON_BLUE 30
 #define BEACON_RED 60
@@ -33,10 +33,10 @@
 //debug_info_t test;
 // Track the number of nearest neighbors
 //that part for python change line 36,37,38,39----------------------
-int informed_size_blue_beacon = 2 ;
-int informed_size_red_beacon = 18;
-int total_informed_size = 20;
-int goNearBeacon = 300;
+int informed_size_blue_beacon = 3;
+int informed_size_red_beacon = 27;
+int total_informed_size = 30;
+int goNearBeacon = 320;
 //------------------------------------------------------------------
 
 int N_neighbors = 0;
@@ -120,7 +120,7 @@ uint32_t turn_ticks = 60;
 
 unsigned int turning_ticks = 0;
 const uint8_t max_turning_ticks = 250; /* constant to allow a maximum rotation of 180 degrees with \omega=\pi/5 */
-const uint16_t max_straight_ticks = 1000; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
+const uint16_t max_straight_ticks = 2000; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
 uint32_t last_motion_ticks = 0;
 uint32_t turn_into_random_walker_ticks = 160; /* timestep to wait without any direction message before turning into random_walker */
 uint32_t last_direction_msg = 0;
@@ -498,47 +498,54 @@ void loop() {
 //							0, 0, 0, message.data[2], walk, distance, kilo_ticks);
 		if (stay_flag > 0) {
 
-//			write_coords("stay_flag1 ", kilo_uid, 0, N_neighbors, stay_flag, 0,
+//			write_coords("stay_flag ", kilo_uid, 0, N_neighbors, stay_flag, neighbor_commit_state,
 //					0, 0, 0, commit_state, walk, distance, kilo_ticks);
+
 			random_walk();
 			--stay_flag;
-			if (new_message) {
-				new_message = 0;
+//			if (new_message) {
+//				new_message = 0;
 
 				if (distance > 0 && distance < DESIRED_DISTANCE
 						&& neighbor_commit_state < uncommited) {
-//					write_coords("stay_flag2 ", kilo_uid, 0, N_neighbors,
+//					write_coords("stay_flag0 ", kilo_uid, 0, N_neighbors,
 //							stay_flag, 0, 0, 0, 0, commit_state, walk, distance,
 //							kilo_ticks);
 					stay_flag = 0;
 				}
 //
-//				write_coords("stay_flag ", kilo_uid, 0, N_neighbors, stay_flag,
+//				write_coords("stay_flag1 ", kilo_uid, 0, N_neighbors, stay_flag,
 //						0, 0, 0, 0, commit_state, walk, distance, kilo_ticks);
 
-				if (stay_flag <= 2) {
-					if (distance_beacon
-							> 0&& distance_beacon < TOO_CLOSE_DISTANCE) {
-						stay_flag = 0;
-					} else {
-						stay_flag = 0;
-						walk = 1;
-
-						commit_state = uncommited;
-						mes_payload = 0;
-						agg_site = 0;
-						if (kilo_uid < total_informed_size) {
-							message.data[2] = commit_state;
-							message.crc = message_crc(&message);
-						}
-						//set_motion(FORWARD);
-						random_walk();
-						msgs_size = 0;
-						//N_neighbors = 0;
-						flag_join_n = 0;
-					}
-				}
-			}
+//				if (stay_flag <= 2) {
+//					write_coords("stay_flag2 ", kilo_uid, 0, N_neighbors, stay_flag,
+//							0, 0, 0, 0, commit_state, walk, distance, kilo_ticks);
+//					if (distance_beacon
+//							> 0&& distance_beacon < TOO_CLOSE_DISTANCE) {
+//						stay_flag = 0;
+//						write_coords("stay_flag3 ", kilo_uid, 0, N_neighbors, stay_flag,
+//								0, 0, 0, 0, commit_state, walk, distance, kilo_ticks);
+//					} else {
+//						stay_flag = 0;
+//						walk = 1;
+//
+//						commit_state = uncommited;
+//						mes_payload = 0;
+//						agg_site = 0;
+//						if (kilo_uid < total_informed_size) {
+//							message.data[2] = commit_state;
+//							message.crc = message_crc(&message);
+//						}
+//						//set_motion(FORWARD);
+//						random_walk();
+//						msgs_size = 0;
+//						//N_neighbors = 0;
+//						flag_join_n = 0;
+//						write_coords("stay_flag4 ", kilo_uid, 0, N_neighbors, stay_flag,
+//								0, 0, 0, 0, commit_state, walk, distance, kilo_ticks);
+//					}
+//				}
+//			}
 		} else if (walk) {
 			//RANDOM WALK
 

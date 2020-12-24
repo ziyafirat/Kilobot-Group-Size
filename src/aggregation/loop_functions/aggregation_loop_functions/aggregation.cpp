@@ -56,8 +56,8 @@ void CAggregation::Init(TConfigurationNode &t_tree) {
 	GetNodeAttributeOrDefault(t_tree, "timeStopCond", timeStopCond,
 			timeStopCond);
 
-	m_cCoordBlackSpot = CVector2(-blackSpotVector, 0);
-	m_cCoordWhiteSpot = CVector2(whiteSpotVector, 0);
+	m_cCoordBlackSpot = CVector2(blackSpotVector, 0);
+	m_cCoordWhiteSpot = CVector2(-whiteSpotVector, 0);
 
 	/* Open the file for text writing */
 	m_cOutFile.open(m_strOutFile.c_str(),
@@ -339,6 +339,8 @@ void CAggregation::PostStep() {
 
 		beacon_blue_count = 0;
 		beacon_red_count = 0;
+		list<pair<float, float> > positions;
+		CVector2 cKilobotPosition(0, 0);
 		//m_cOutFile << clock << "	";
 		for (unsigned int i = 0; i < bots.size(); ++i) {
 			CKilobotEntity &kbEntity = *any_cast<CKilobotEntity*>(bots[i]);
@@ -349,19 +351,30 @@ void CAggregation::PostStep() {
 
 			//CColor cl;
 
-			CVector2 c_kilobot_xy_position(
-					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX(),
-					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY());
-			m_cKilobotOriginalPositions.push_back(c_kilobot_xy_position);
+			Real Robot_X =
+					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX();
+							Real Robot_Y =
+									kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY();
+							positions.push_back(make_pair(Robot_X, Robot_Y));
+
+			//			m_cOutFile << "    " << Robot_X << " \t         " << Robot_Y
+			//					<< endl;
+
+							cKilobotPosition.Set(Robot_X, Robot_Y);
+
+//			CVector2 c_kilobot_xy_position(
+//					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetX(),
+//					kbEntity.GetEmbodiedEntity().GetOriginAnchor().Position.GetY());
+//			m_cKilobotOriginalPositions.push_back(c_kilobot_xy_position);
 
 			Real fDistanceSpotBlack =
-					(m_cCoordBlackSpot - c_kilobot_xy_position).Length();
+					(m_cCoordBlackSpot - cKilobotPosition).Length();
 			Real fDistanceSpotWhite =
-					(m_cCoordWhiteSpot - c_kilobot_xy_position).Length();
+					(m_cCoordWhiteSpot - cKilobotPosition).Length();
 			if (fDistanceSpotBlack <= m_fRadius && totalSpots >= 2) {
 
 				//color.SetBlue(1);
-				LOG << i << "- bluespotJoin:" << c_kilobot_xy_position
+				LOG << i << "- bluespotJoin:" << cKilobotPosition
 						<< std::endl;
 
 				message_t msg = *(new message_t());
@@ -378,7 +391,7 @@ void CAggregation::PostStep() {
 //				}
 			} else if (fDistanceSpotWhite <= m_fRadius && totalSpots >= 2) {
 				//color.SetBlue(1);
-				LOG << i << "- redspotJoin:" << c_kilobot_xy_position
+				LOG << i << "- redspotJoin:" << cKilobotPosition
 						<< std::endl;
 
 				message_t msg = *(new message_t());

@@ -374,8 +374,8 @@ void CAggregation::PostStep() {
 			if (fDistanceSpotBlack <= m_fRadius && totalSpots >= 2) {
 
 				//color.SetBlue(1);
-				LOG << i << "- bluespotJoin:" << cKilobotPosition
-						<< std::endl;
+//				LOG << i << "- bluespotJoin:" << cKilobotPosition
+//						<< std::endl;
 
 				message_t msg = *(new message_t());
 				msg.type = NORMAL;
@@ -391,8 +391,8 @@ void CAggregation::PostStep() {
 //				}
 			} else if (fDistanceSpotWhite <= m_fRadius && totalSpots >= 2) {
 				//color.SetBlue(1);
-				LOG << i << "- redspotJoin:" << cKilobotPosition
-						<< std::endl;
+//				LOG << i << "- redspotJoin:" << cKilobotPosition
+//						<< std::endl;
 
 				message_t msg = *(new message_t());
 				msg.type = NORMAL;
@@ -454,16 +454,16 @@ void CAggregation::PostStep() {
 //
 //
 			if (clock % 100 == 0) {
-				LOG << i << "- color:" << color << std::endl;
+//				LOG << i << "- color:" << color << std::endl;
 				if (color.GetGreen() > 0) {
 
 				} else {
 					if (color.GetBlue() > 0) {
 						beacon_blue_count += 1;
-						LOG << "blue:" << beacon_blue_count << std::endl;
+//						LOG << "blue:" << beacon_blue_count << std::endl;
 					} else if (color.GetRed() > 0) {
 						beacon_red_count += 1;
-						LOG << "red:" << beacon_red_count << std::endl;
+//						LOG << "red:" << beacon_red_count << std::endl;
 					}
 				}
 			}

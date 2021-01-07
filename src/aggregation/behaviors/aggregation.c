@@ -13,7 +13,7 @@
 // argos3 -c aggregation/experiments/kilobot_aggregation.argos
 
 #define PI_TURN 26
-#define STRAIGHT 2000
+#define STRAIGHT 1000
 #define RHO 0.6
 #define PI 3.14159265358979323846
 #define TWO_PI 2.0*PI
@@ -33,10 +33,10 @@
 //debug_info_t test;
 // Track the number of nearest neighbors
 //that part for python change line 36,37,38,39----------------------
-int informed_size_blue_beacon = 3;
-int informed_size_red_beacon = 27;
-int total_informed_size = 30;
-int goNearBeacon = 320;
+int informed_size_blue_beacon = 4;
+int informed_size_red_beacon = 4;
+int total_informed_size = 8;
+int goNearBeacon = 60;
 //------------------------------------------------------------------
 
 int N_neighbors = 0;
@@ -120,7 +120,7 @@ uint32_t turn_ticks = 60;
 
 unsigned int turning_ticks = 0;
 const uint8_t max_turning_ticks = 250; /* constant to allow a maximum rotation of 180 degrees with \omega=\pi/5 */
-const uint16_t max_straight_ticks = 2000; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
+const uint16_t max_straight_ticks = 1000; /* set the \tau_m period to 2.5 s: n_m = \tau_m/\delta_t = 2.5/(1/32) */
 uint32_t last_motion_ticks = 0;
 uint32_t turn_into_random_walker_ticks = 160; /* timestep to wait without any direction message before turning into random_walker */
 uint32_t last_direction_msg = 0;
